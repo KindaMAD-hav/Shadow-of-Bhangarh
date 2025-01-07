@@ -4,7 +4,7 @@
 PlayerSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 28
-  productGUID: f207a06ac45778542a616a85131b49bd
+  productGUID: 168a184e371cc1048b619d777abebf37
   AndroidProfiler: 0
   AndroidFilterTouchesWhenObscured: 0
   AndroidEnableSustainedPerformanceMode: 0
@@ -13,7 +13,7 @@ PlayerSettings:
   useOnDemandResources: 0
   accelerometerFrequency: 60
   companyName: DefaultCompany
-  productName: Shadow-of-Bhangarh
+  productName: Shadow of Bhangarh
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
   m_SplashScreenBackgroundColor: {r: 0.13725491, g: 0.12156863, b: 0.1254902, a: 1}
@@ -852,14 +852,14 @@ PlayerSettings:
   editorAssembliesCompatibilityLevel: 1
   m_RenderingPath: 1
   m_MobileRenderingPath: 1
-  metroPackageName: Shadow-of-Bhangarh
+  metroPackageName: Shadow of Bhangarh
   metroPackageVersion: 
   metroCertificatePath: 
   metroCertificatePassword: 
   metroCertificateSubject: 
   metroCertificateIssuer: 
   metroCertificateNotAfter: 0000000000000000
-  metroApplicationDescription: Shadow-of-Bhangarh
+  metroApplicationDescription: Shadow of Bhangarh
   wsaImages: {}
   metroTileShortName: 
   metroTileShowName: 0
@@ -930,11 +930,11 @@ PlayerSettings:
   captureStartupLogs: {}
   activeInputHandler: 2
   windowsGamepadBackendHint: 0
-  cloudProjectId: 2f26435d-e186-4b51-8ce9-ceb359464958
+  cloudProjectId: 6a235f25-0938-45e5-bc51-46baf4c194e7
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
-  projectName: Shadow-of-Bhangarh
-  organizationId: haddiiiii
+  projectName: Shadow of Bhangarh
+  organizationId: natsunotneel0
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
   hmiLoadingImage: {fileID: 0}

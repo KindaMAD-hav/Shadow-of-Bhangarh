@@ -1,4 +1,0 @@
-repository "Shadow-of-Bhangarh@HADDIIIII@cloud"
-  path "/"
-    br "/main"
-    co "/main"
