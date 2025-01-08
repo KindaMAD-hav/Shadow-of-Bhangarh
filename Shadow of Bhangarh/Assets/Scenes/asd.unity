@@ -607,8 +607,9 @@ MonoBehaviour:
   detectionDistance: 9
   playerLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 8
   keyLayerName: KitchenDoorKey
+  playerKeys: []
 --- !u!95 &867157673
 Animator:
   serializedVersion: 7
