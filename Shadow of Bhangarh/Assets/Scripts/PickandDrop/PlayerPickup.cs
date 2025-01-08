@@ -5,14 +5,25 @@ public class PlayerPickup : MonoBehaviour
     public float pickupRadius = 2f;
     public KeyCode pickupKey = KeyCode.P;
     public KeyCode dropKey = KeyCode.O;
-    public Transform itemHoldPosition;  // Position where the item should be held
-    public Transform playerBody;        // The player's body to attach the item to
-    private GameObject heldItem;        // The currently held item
-    private bool isKey;                 // Flag for special item types (if needed)
+    public Transform itemHoldPosition;
+    public Transform rifleHoldPosition;  // Added specific position for rifles
+    public Transform playerBody;
+    private GameObject heldItem;
+    bool isKey;
+    bool isRifle;
+
+    [Header("Audio")]
+    public AudioClip pickupSound;
+    public AudioClip dropSound;
+    private AudioSource audioSource;
+
+    void Start()
+    {
+        audioSource = GetComponent<AudioSource>();
+    }
 
     void Update()
     {
-        // Handle pickup and drop logic
         if (Input.GetKeyDown(pickupKey))
         {
             TryPickupItem();
@@ -23,7 +34,6 @@ public class PlayerPickup : MonoBehaviour
             DropItem();
         }
 
-        // Update held item's position to follow the player if an item is held
         if (heldItem != null)
         {
             FollowPlayer();
@@ -32,21 +42,19 @@ public class PlayerPickup : MonoBehaviour
 
     void TryPickupItem()
     {
-        // Prevent picking up a new item if one is already held
         if (heldItem != null)
         {
             Debug.Log("Already holding an item.");
             return;
         }
 
-        // Look for pickable items within the specified radius
         Collider[] hitColliders = Physics.OverlapSphere(transform.position, pickupRadius);
         GameObject closestItem = null;
         float closestDistance = pickupRadius;
 
         foreach (var hitCollider in hitColliders)
         {
-            if (hitCollider.CompareTag("PickupItem"))
+            if (hitCollider.CompareTag("PickupItem") || hitCollider.CompareTag("Rifle"))
             {
                 float distance = Vector3.Distance(transform.position, hitCollider.transform.position);
                 if (distance < closestDistance)
@@ -57,7 +65,6 @@ public class PlayerPickup : MonoBehaviour
             }
         }
 
-        // If a valid item is found, pick it up
         if (closestItem != null)
         {
             Pickup(closestItem);
@@ -67,50 +74,71 @@ public class PlayerPickup : MonoBehaviour
     void Pickup(GameObject item)
     {
         heldItem = item;
-        heldItem.GetComponent<Collider>().enabled = false;  // Disable collider to prevent unwanted interactions
-
+        heldItem.GetComponent<Collider>().enabled = false;
         Rigidbody itemRb = heldItem.GetComponent<Rigidbody>();
         if (itemRb != null)
         {
-            itemRb.isKinematic = true;  // Disable physics interactions for the held item
+            itemRb.isKinematic = true;
         }
 
-        isKey = true;  // Set the flag to true if it's a key item (you can extend this later)
+        // Set appropriate flags and positions based on item type
+        isRifle = item.CompareTag("Rifle");
+        isKey = !isRifle && item.CompareTag("PickupItem");
 
-        // Attach item to the player and set its initial position
         heldItem.transform.SetParent(playerBody);
-        heldItem.transform.position = itemHoldPosition.position;
-        heldItem.transform.rotation = itemHoldPosition.rotation;
 
-        Debug.Log("Picked Up: " + item.name);
+        // Use different hold positions for rifles vs regular items
+        if (isRifle)
+        {
+            heldItem.transform.position = rifleHoldPosition.position;
+            heldItem.transform.rotation = rifleHoldPosition.rotation;
+        }
+        else
+        {
+            heldItem.transform.position = itemHoldPosition.position;
+            heldItem.transform.rotation = itemHoldPosition.rotation;
+        }
+
+        Debug.Log($"Picked Up: {item.name} ({(isRifle ? "Rifle" : "Regular Item")})");
+        PlaySound(pickupSound);
     }
 
     void DropItem()
     {
         if (heldItem != null)
         {
-            heldItem.GetComponent<Collider>().enabled = true;  // Re-enable collider for interaction
+            heldItem.GetComponent<Collider>().enabled = true;
 
             Rigidbody itemRb = heldItem.GetComponent<Rigidbody>();
             if (itemRb != null)
             {
-                itemRb.isKinematic = false;  // Re-enable physics interactions
+                itemRb.isKinematic = false;
             }
 
-            heldItem.transform.SetParent(null);  // Detach from player
+            heldItem.transform.SetParent(null);
             heldItem = null;
-
+            isRifle = false;
+            isKey = false;
+            PlaySound(dropSound);
             Debug.Log("Dropped item.");
         }
     }
 
-    // Update the position of the held item to follow the player's holding position
     void FollowPlayer()
     {
         if (heldItem != null)
         {
-            heldItem.transform.position = itemHoldPosition.position;  // Update position
-            heldItem.transform.rotation = itemHoldPosition.rotation;  // Update rotation (if necessary)
+            Transform targetPosition = isRifle ? rifleHoldPosition : itemHoldPosition;
+            heldItem.transform.position = targetPosition.position;
+            heldItem.transform.rotation = targetPosition.rotation;
+        }
+    }
+
+    void PlaySound(AudioClip clip)
+    {
+        if (clip != null)
+        {
+            audioSource.PlayOneShot(clip);
         }
     }
 }
