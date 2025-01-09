@@ -56,19 +56,15 @@ public class DoorController : MonoBehaviour
             Debug.LogError("Player reference is not set in the DoorController script!");
             return;
         }
-
         float distanceToPlayer = Vector3.Distance(player.position, transform.position);
-        Debug.Log($"Distance to Player: {distanceToPlayer}");
-
         if (distanceToPlayer <= detectionDistance)
         {
             isPlayerNear = true;
-            Debug.Log("Player is near the door.");
+            
         }
         else
         {
             isPlayerNear = false;
-            Debug.Log("Player is not near the door.");
         }
     }
 
