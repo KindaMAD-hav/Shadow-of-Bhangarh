@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
+
 public class DoorController : MonoBehaviour
 {
     Animator doorAnimator;
@@ -10,35 +12,35 @@ public class DoorController : MonoBehaviour
     public LayerMask playerLayer;
     private bool isPlayerNear = false;
     public string keyLayerName = "";
-    public List<GameObject> playerKeys; // List to store player's keys
+
 
     void Start()
     {
         doorAnimator = GetComponent<Animator>();
+
+        if (player == null)
+        {
+            GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
+            if (playerObject != null)
+            {
+                player = playerObject.transform;
+                Debug.Log("Player reference found and assigned.");
+            }
+            else
+            {
+                Debug.LogError("Player GameObject not found! Ensure it has the 'Player' tag.");
+            }
+        }
     }
+
 
     void Update()
     {
-        CheckPlayerDistance();
+        CheckPlayerProximity();
         if (isPlayerNear && Input.GetKeyDown(KeyCode.E))
         {
             OnDoorButtonPress();
         }
-    }
-
-    void CheckPlayerDistance()
-    {
-        RaycastHit hit;
-        Vector3 directionToPlayer = player.position - transform.position;
-        if (Physics.Raycast(transform.position, directionToPlayer, out hit, detectionDistance, playerLayer))
-        {
-            if (hit.transform == player)
-            {
-                isPlayerNear = true;
-                return;
-            }
-        }
-        isPlayerNear = false;
     }
 
     public void OnDoorButtonPress()
@@ -46,30 +48,62 @@ public class DoorController : MonoBehaviour
         OpenDoor();
     }
 
-    void OpenDoor()
-    {
-        if (doorAnimator != null)
-        {
-            if (!string.IsNullOrEmpty(keyLayerName))
-            {
-                bool playerHasKey = false;
-                foreach (GameObject key in playerKeys) // Loop through player's keys
-                {
-                    if (key.layer == LayerMask.NameToLayer(keyLayerName))
-                    {
-                        playerHasKey = true;
-                        break;
-                    }
-                }
 
-                if (!playerHasKey)
-                {
-                    return;
-                }
-            }
-            doorAnimator.SetTrigger("Open");
-            //sound
-            //enemy knows that the door is open
+    void CheckPlayerProximity()
+    {
+        if (player == null)
+        {
+            Debug.LogError("Player reference is not set in the DoorController script!");
+            return;
+        }
+
+        float distanceToPlayer = Vector3.Distance(player.position, transform.position);
+        Debug.Log($"Distance to Player: {distanceToPlayer}");
+
+        if (distanceToPlayer <= detectionDistance)
+        {
+            isPlayerNear = true;
+            Debug.Log("Player is near the door.");
+        }
+        else
+        {
+            isPlayerNear = false;
+            Debug.Log("Player is not near the door.");
         }
     }
+
+    void OpenDoor()
+    {
+        if (doorAnimator == null)
+        {
+            Debug.LogError("Animator component is missing!");
+            return;
+        }
+
+        if (!string.IsNullOrEmpty(keyLayerName))
+        {
+            bool playerHasKey = false;
+
+            // Check if the player has the required key by checking their inventory or child objects
+            foreach (Transform item in player)
+            {
+                if (item.gameObject.layer == LayerMask.NameToLayer(keyLayerName))
+                {
+                    playerHasKey = true;
+                    Debug.Log("Player has the required key.");
+                    break;
+                }
+            }
+
+            if (!playerHasKey)
+            {
+                Debug.Log("Player does not have the required key.");
+                return;
+            }
+        }
+
+        doorAnimator.SetTrigger("Open");
+        Debug.Log("Door is opening.");
+    }
+
 }

@@ -603,12 +603,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4533f6459ae0de24dae50c671b4dd991, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  doorAnimator: {fileID: 867157673}
   player: {fileID: 352616682}
-  detectionDistance: 9
+  detectionDistance: 7.29
   playerLayer:
     serializedVersion: 2
-    m_Bits: 0
-  keyLayerName: KitchenDoorKey
+    m_Bits: 8
+  keyLayerName: Key1
+  showDebugGizmos: 1
+  enableDebugLogs: 1
 --- !u!95 &867157673
 Animator:
   serializedVersion: 7
