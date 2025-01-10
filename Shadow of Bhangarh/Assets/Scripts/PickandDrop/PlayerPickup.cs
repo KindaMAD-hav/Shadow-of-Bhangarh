@@ -120,6 +120,11 @@ public class PlayerPickup : MonoBehaviour
             isRifle = false;
             isKey = false;
             PlaySound(dropSound);
+            VillainAI villainAI = FindObjectOfType<VillainAI>();
+            if (villainAI != null)
+            {
+                villainAI.OnSoundHeard(transform.position);
+            }
             Debug.Log("Dropped item.");
         }
     }

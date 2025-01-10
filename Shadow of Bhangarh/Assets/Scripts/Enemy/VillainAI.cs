@@ -23,8 +23,16 @@ public class VillainAI : MonoBehaviour
 
     [Header("Navigation")]
     public Transform startPosition;
+    public float searchRadius = 2f; // Radius to check for items at sound location
 
     private Animator animator;
+
+    [Header("Footstep")]
+    public AudioClip[] footstepSounds;
+    AudioSource audioSource;
+    float footstepInterval = 0.5f;
+    float nextFootstepTime = 0f;
+
 
     void Start()
     {
@@ -32,6 +40,8 @@ public class VillainAI : MonoBehaviour
         navMeshAgent = GetComponent<UnityEngine.AI.NavMeshAgent>();
         navMeshAgent.speed = moveSpeed;
         animator = GetComponent<Animator>();
+        audioSource = GetComponent<AudioSource>();
+
 
         // Store initial position if startPosition isn't set
         if (startPosition == null)
@@ -82,8 +92,13 @@ public class VillainAI : MonoBehaviour
         {
             ReturnToStart();
         }
+        else if (soundHeard)
+        {
+            MoveToSoundLocation();
+        }
 
         UpdateAnimations();
+        PlayFootstepSounds();
     }
 
     void LookForPlayer()
@@ -128,17 +143,49 @@ public class VillainAI : MonoBehaviour
         isChasing = false;
         isAttacking = false;
         isWaiting = false;
-        MoveToSoundLocation();
     }
 
     void MoveToSoundLocation()
     {
         navMeshAgent.SetDestination(soundLocation);
         Debug.Log($"Moving to sound location: {soundLocation}");
+        Debug.Log($"Current position: {transform.position}, Distance: {Vector3.Distance(transform.position, soundLocation)}, Stopping distance: {navMeshAgent.stoppingDistance}");
 
-        if (Vector3.Distance(transform.position, soundLocation) <= navMeshAgent.stoppingDistance)
+        // Check if we've reached the destination with a small buffer
+        if (Vector3.Distance(transform.position, soundLocation) <= (navMeshAgent.stoppingDistance + 0.1f))
         {
-            Debug.Log("Reached sound location. Waiting before returning.");
+            Debug.Log("Reached sound location");
+            soundHeard = false;
+            navMeshAgent.isStopped = true; // Stop the agent from moving
+            CheckForItems();
+        }
+    }
+
+    void CheckForItems()
+    {
+        Debug.Log("Checking for items at sound location...");
+        bool itemFound = false;
+
+        // Check for any pickup items or rifles in the area
+        Collider[] hitColliders = Physics.OverlapSphere(transform.position, searchRadius);
+        foreach (var hitCollider in hitColliders)
+        {
+            if (hitCollider.CompareTag("PickupItem") || hitCollider.CompareTag("Rifle"))
+            {
+                Debug.Log($"Found item: {hitCollider.gameObject.name}");
+                itemFound = true;
+                break;
+            }
+        }
+
+        if (!itemFound)
+        {
+            Debug.Log("No items found at sound location. Starting return timer.");
+            StartCoroutine(WaitBeforeReturning());
+        }
+        else
+        {
+            Debug.Log("Items found at sound location. Continuing to wait and search.");
             StartCoroutine(WaitBeforeReturning());
         }
     }
@@ -148,9 +195,9 @@ public class VillainAI : MonoBehaviour
         isWaiting = true;
         yield return new WaitForSeconds(10f);
         Debug.Log("Finished waiting. Returning to start.");
+        navMeshAgent.isStopped = false; // Re-enable movement
         isWaiting = false;
         isReturning = true;
-        soundHeard = false;
     }
 
     void ReturnToStart()
@@ -219,6 +266,19 @@ public class VillainAI : MonoBehaviour
         if (!isMoving && !isAttacking && !isDead)
         {
             animator.SetBool("isIdle", true);
+        }
+    }
+
+    void PlayFootstepSounds()
+    {
+        if(navMeshAgent.velocity.magnitude > 0.1f && Time.time >= nextFootstepTime)
+        {
+            if(footstepSounds.Length >0)
+            {
+                AudioClip footstepSound = footstepSounds[Random.Range(0, footstepSounds.Length)];
+                audioSource.PlayOneShot(footstepSound);
+                nextFootstepTime = Time.time + footstepInterval;
+            }
         }
     }
 }
