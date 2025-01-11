@@ -6,7 +6,7 @@ public class ShootingController : MonoBehaviour
     public float shootRange = 100f;
     public int maxBullets = 3;
     public float shootCooldown = 0.5f;
-    public float givenDamageOf = 40f;
+    public float givenDamageOf = 100f;
     public AudioClip shootingSound;
     public AudioSource audioSource;
 
@@ -20,7 +20,7 @@ public class ShootingController : MonoBehaviour
 
     void Update()
     {
-        if(Input.GetMouseButtonDown(0) && Time.time > lastShootTime + shootCooldown)
+        if(Input.GetMouseButtonDown(0) && Time.time > lastShootTime + shootCooldown && PlayerPickup.instance.isRifle)
         {
             Shoot();
         }
@@ -40,8 +40,12 @@ public class ShootingController : MonoBehaviour
             if(Physics.Raycast(playerCamera.transform.position, playerCamera.transform.forward, out hit, shootRange))
             {
                 Debug.Log("Hit:" + hit.collider.name);
-                //damage enemy
-                    }
+                VillainAI villainAI = hit.transform.GetComponent<VillainAI>();
+                if(villainAI != null )
+                {
+                    villainAI.characterHitDamage(givenDamageOf);
+                }
+            }
             Debug.Log("Shot fired. Bullet left" + currentBullets);
         }
         else

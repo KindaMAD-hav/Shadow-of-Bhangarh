@@ -3,6 +3,12 @@ using UnityEngine;
 
 public class VillainAI : MonoBehaviour
 {
+    [Header("Health System")]
+    float characterHealth = 100f;
+    public float presentHealth;
+    public float respawnTime = 5f;
+
+
     [Header("Sound Detection")]
     UnityEngine.AI.NavMeshAgent navMeshAgent;
     public float moveSpeed = 3.5f;
@@ -37,6 +43,7 @@ public class VillainAI : MonoBehaviour
     void Start()
     {
         Debug.Log("VillainAI initialized.");
+        presentHealth = characterHealth;
         navMeshAgent = GetComponent<UnityEngine.AI.NavMeshAgent>();
         navMeshAgent.speed = moveSpeed;
         animator = GetComponent<Animator>();
@@ -71,7 +78,6 @@ public class VillainAI : MonoBehaviour
     {
         if (isDead) return;
 
-        Debug.Log($"Current state - Chasing: {isChasing}, Attacking: {isAttacking}, Returning: {isReturning}, Waiting: {isWaiting}");
 
         // Always check for player in range
         LookForPlayer();
@@ -104,10 +110,7 @@ public class VillainAI : MonoBehaviour
     void LookForPlayer()
     {
         if (player == null) return;
-
         float distanceToPlayer = Vector3.Distance(transform.position, player.position);
-        Debug.Log($"Distance to player: {distanceToPlayer}");
-
         if (distanceToPlayer <= detectionRadius)
         {
             RaycastHit hit;
@@ -115,10 +118,8 @@ public class VillainAI : MonoBehaviour
 
             if (Physics.Raycast(transform.position, directionToPlayer, out hit, detectionRadius))
             {
-                Debug.Log($"Raycast hit: {hit.transform.name}");
                 if (hit.transform == player)
                 {
-                    Debug.Log("Player detected!");
                     isChasing = true;
                     isReturning = false;
                     isWaiting = false;
@@ -135,8 +136,6 @@ public class VillainAI : MonoBehaviour
     public void OnSoundHeard(Vector3 location)
     {
         if (isDead) return;
-
-        Debug.Log($"Sound heard at location: {location}");
         soundLocation = location;
         soundHeard = true;
         isReturning = false;
@@ -148,15 +147,11 @@ public class VillainAI : MonoBehaviour
     void MoveToSoundLocation()
     {
         navMeshAgent.SetDestination(soundLocation);
-        Debug.Log($"Moving to sound location: {soundLocation}");
-        Debug.Log($"Current position: {transform.position}, Distance: {Vector3.Distance(transform.position, soundLocation)}, Stopping distance: {navMeshAgent.stoppingDistance}");
-
-        // Check if we've reached the destination with a small buffer
         if (Vector3.Distance(transform.position, soundLocation) <= (navMeshAgent.stoppingDistance + 0.1f))
         {
             Debug.Log("Reached sound location");
             soundHeard = false;
-            navMeshAgent.isStopped = true; // Stop the agent from moving
+            navMeshAgent.isStopped = true; 
             CheckForItems();
         }
     }
@@ -194,7 +189,6 @@ public class VillainAI : MonoBehaviour
     {
         isWaiting = true;
         yield return new WaitForSeconds(10f);
-        Debug.Log("Finished waiting. Returning to start.");
         navMeshAgent.isStopped = false; // Re-enable movement
         isWaiting = false;
         isReturning = true;
@@ -203,8 +197,6 @@ public class VillainAI : MonoBehaviour
     void ReturnToStart()
     {
         navMeshAgent.SetDestination(startPosition.position);
-        Debug.Log($"Returning to start position: {startPosition.position}");
-
         if (Vector3.Distance(transform.position, startPosition.position) <= navMeshAgent.stoppingDistance)
         {
             Debug.Log("Returned to start position.");
@@ -217,7 +209,6 @@ public class VillainAI : MonoBehaviour
         if (player == null) return;
 
         navMeshAgent.SetDestination(player.position);
-        Debug.Log($"Chasing player. Current position: {transform.position}, Player position: {player.position}");
 
         float distanceToPlayer = Vector3.Distance(transform.position, player.position);
         if (distanceToPlayer <= attackRange)
@@ -240,10 +231,17 @@ public class VillainAI : MonoBehaviour
     {
         if (Time.time > lastAttackTime + attackCooldown)
         {
-            Debug.Log("Attacking player!");
+            
 
-            // Placeholder for actual damage logic
+            PlayerController playerController = player.GetComponent<PlayerController>();
+            if (playerController != null)
+            {
+                Debug.Log("Attacking player!");
+                playerController.TakeDamage(100f);
+            }
+
             lastAttackTime = Time.time;
+            StartCoroutine(Respawn(2));
 
             float distanceToPlayer = Vector3.Distance(transform.position, player.position);
             if (distanceToPlayer > attackRange)
@@ -269,16 +267,64 @@ public class VillainAI : MonoBehaviour
         }
     }
 
+
     void PlayFootstepSounds()
     {
-        if(navMeshAgent.velocity.magnitude > 0.1f && Time.time >= nextFootstepTime)
+        if (navMeshAgent.velocity.magnitude > 0.1f && Time.time >= nextFootstepTime)
         {
-            if(footstepSounds.Length >0)
+            if (footstepSounds.Length > 0)
             {
                 AudioClip footstepSound = footstepSounds[Random.Range(0, footstepSounds.Length)];
                 audioSource.PlayOneShot(footstepSound);
                 nextFootstepTime = Time.time + footstepInterval;
             }
         }
+    }
+    public void characterHitDamage(float takeDamage)
+    {
+        if (isDead) return;
+        presentHealth -= takeDamage;
+        if(presentHealth <= 0)
+        {
+            characterDie();
+        }
+    }
+    void characterDie()
+    {
+        isDead = true;
+        moveSpeed = 0f;
+        navMeshAgent.speed = moveSpeed;
+        detectionRadius = 0f;
+        animator.SetBool("isDead", true);
+        GetComponent<Collider>().enabled = false;
+        navMeshAgent.enabled = false;
+
+        //UI
+
+        //Respawn
+        StartCoroutine(Respawn(respawnTime));
+    }
+    IEnumerator Respawn(float delay)
+    {
+        yield return new WaitForSeconds(delay - 3f);
+        presentHealth = characterHealth;
+        isDead = false;
+        animator.SetBool("isDead", false);
+        GetComponent<Collider>().enabled = true;
+        navMeshAgent.enabled = true;
+        this.enabled = true;
+
+        transform.position = startPosition.position;
+        navMeshAgent.Warp(startPosition.position);
+
+        isReturning = false;
+        isChasing = false;
+        isAttacking = false;
+        isWaiting = false;
+        soundHeard = false;
+        moveSpeed = 3.5f;
+        navMeshAgent.speed = moveSpeed;
+        detectionRadius = 15f;
+
     }
 }
