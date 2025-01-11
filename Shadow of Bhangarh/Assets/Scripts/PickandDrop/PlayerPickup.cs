@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class PlayerPickup : MonoBehaviour
 {
+    public static PlayerPickup instance;
     public float pickupRadius = 2f;
     public KeyCode pickupKey = KeyCode.P;
     public KeyCode dropKey = KeyCode.O;
@@ -10,7 +11,7 @@ public class PlayerPickup : MonoBehaviour
     public Transform playerBody;
     private GameObject heldItem;
     bool isKey;
-    bool isRifle;
+    public bool isRifle;
 
     [Header("Audio")]
     public AudioClip pickupSound;
@@ -19,6 +20,7 @@ public class PlayerPickup : MonoBehaviour
 
     void Start()
     {
+        instance = this;
         audioSource = GetComponent<AudioSource>();
     }
 
@@ -120,6 +122,11 @@ public class PlayerPickup : MonoBehaviour
             isRifle = false;
             isKey = false;
             PlaySound(dropSound);
+            VillainAI villainAI = FindObjectOfType<VillainAI>();
+            if (villainAI != null)
+            {
+                villainAI.OnSoundHeard(transform.position);
+            }
             Debug.Log("Dropped item.");
         }
     }

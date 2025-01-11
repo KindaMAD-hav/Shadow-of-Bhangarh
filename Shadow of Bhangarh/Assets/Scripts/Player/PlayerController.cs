@@ -4,6 +4,12 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    [Header("Player Health")]
+    public float currentHealth;
+    float maxHealth;
+    private bool isDead = false;
+    public Transform startPosition;
+
     [Header("Movement and Gravity")]
     public float speed = 5f;
     public float gravity = -9.81f;
@@ -25,12 +31,14 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         // Initialize the CharacterController
+
         characterController = GetComponent<CharacterController>();
         if (characterController == null)
         {
             Debug.LogError("CharacterController component is missing on this GameObject.");
         }
         Cursor.lockState = CursorLockMode.Locked;
+        currentHealth = maxHealth;
     }
 
     void Update()
@@ -103,5 +111,34 @@ public class PlayerController : MonoBehaviour
         isCrouching = !isCrouching;
         characterController.height = isCrouching ? crouchHeight : standHeight;
         characterController.radius = isCrouching ? 0.2f : 0.5f;
+    }
+
+    public void TakeDamage(float damage)
+    {
+        currentHealth -= damage;
+        if(currentHealth <= 0 && !isDead)
+        {
+            Die();
+        }
+    }
+
+    void Die()
+    {
+        isDead = true;
+        //decrease the day
+        StartCoroutine(HandleRespawn());
+    }
+
+    IEnumerator HandleRespawn()
+    {
+        yield return new WaitForSeconds(2f);
+        //black screen
+        characterController.enabled = false;
+        transform.position = startPosition.position;
+        characterController.enabled = true;
+        yield return new WaitForSeconds(0f);
+        //deactivate black screen
+        currentHealth = maxHealth;
+        isDead = false;
     }
 }
