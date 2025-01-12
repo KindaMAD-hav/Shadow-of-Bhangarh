@@ -327,4 +327,22 @@ public class VillainAI : MonoBehaviour
         detectionRadius = 15f;
 
     }
+    void OnDrawGizmos()
+    {
+        if (navMeshAgent == null || !navMeshAgent.isActiveAndEnabled || !navMeshAgent.hasPath)
+            return;
+
+        // Set the color for the Gizmos
+        Gizmos.color = Color.red;
+
+        // Get the corners of the path
+        Vector3[] pathCorners = navMeshAgent.path.corners;
+
+        // Draw the path
+        for (int i = 0; i < pathCorners.Length - 1; i++)
+        {
+            Gizmos.DrawLine(pathCorners[i], pathCorners[i + 1]);
+        }
+    }
+
 }
