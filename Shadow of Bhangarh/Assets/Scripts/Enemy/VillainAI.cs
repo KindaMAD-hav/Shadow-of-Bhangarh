@@ -8,7 +8,6 @@ public class VillainAI : MonoBehaviour
     public float presentHealth;
     public float respawnTime = 5f;
 
-
     [Header("Sound Detection")]
     UnityEngine.AI.NavMeshAgent navMeshAgent;
     public float moveSpeed = 3.5f;
@@ -27,18 +26,22 @@ public class VillainAI : MonoBehaviour
     public float attackCooldown = 1f;
     float lastAttackTime = 0f;
 
+    [Header("Attack Settings")]
+    public float attackAnimationDuration = 1.5f;
+    public float damageDelay = 0.5f;
+
     [Header("Navigation")]
     public Transform startPosition;
-    public float searchRadius = 2f; // Radius to check for items at sound location
+    public float searchRadius = 2f;
 
     private Animator animator;
 
     [Header("Footstep")]
     public AudioClip[] footstepSounds;
-    AudioSource audioSource;
-    float footstepInterval = 0.5f;
-    float nextFootstepTime = 0f;
-
+    private AudioSource audioSource;
+    [Tooltip("Interval between footstep sounds in seconds")]
+    public float footstepInterval = 0.5f; // Adjustable in Inspector
+    private float nextFootstepTime = 0f;
 
     void Start()
     {
@@ -49,8 +52,6 @@ public class VillainAI : MonoBehaviour
         animator = GetComponent<Animator>();
         audioSource = GetComponent<AudioSource>();
 
-
-        // Store initial position if startPosition isn't set
         if (startPosition == null)
         {
             GameObject startMarker = new GameObject($"{gameObject.name}_StartPosition");
@@ -58,7 +59,6 @@ public class VillainAI : MonoBehaviour
             startPosition = startMarker.transform;
         }
 
-        // Auto-assign player if not set
         if (player == null)
         {
             GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
@@ -78,9 +78,11 @@ public class VillainAI : MonoBehaviour
     {
         if (isDead) return;
 
-
-        // Always check for player in range
-        LookForPlayer();
+        // Don't look for player while attacking
+        if (!isAttacking)
+        {
+            LookForPlayer();
+        }
 
         if (isAttacking)
         {
@@ -92,7 +94,7 @@ public class VillainAI : MonoBehaviour
         }
         else if (isWaiting)
         {
-            LookForPlayer(); // Continue looking for the player
+            LookForPlayer();
         }
         else if (isReturning)
         {
@@ -126,21 +128,16 @@ public class VillainAI : MonoBehaviour
                     navMeshAgent.isStopped = false;
                 }
             }
-            else
-            {
-                Debug.Log("Raycast did not hit the player.");
-            }
         }
     }
 
     public void OnSoundHeard(Vector3 location)
     {
-        if (isDead) return;
+        if (isDead || isAttacking) return;
         soundLocation = location;
         soundHeard = true;
         isReturning = false;
         isChasing = false;
-        isAttacking = false;
         isWaiting = false;
     }
 
@@ -151,7 +148,7 @@ public class VillainAI : MonoBehaviour
         {
             Debug.Log("Reached sound location");
             soundHeard = false;
-            navMeshAgent.isStopped = true; 
+            navMeshAgent.isStopped = true;
             CheckForItems();
         }
     }
@@ -161,7 +158,6 @@ public class VillainAI : MonoBehaviour
         Debug.Log("Checking for items at sound location...");
         bool itemFound = false;
 
-        // Check for any pickup items or rifles in the area
         Collider[] hitColliders = Physics.OverlapSphere(transform.position, searchRadius);
         foreach (var hitCollider in hitColliders)
         {
@@ -173,23 +169,14 @@ public class VillainAI : MonoBehaviour
             }
         }
 
-        if (!itemFound)
-        {
-            Debug.Log("No items found at sound location. Starting return timer.");
-            StartCoroutine(WaitBeforeReturning());
-        }
-        else
-        {
-            Debug.Log("Items found at sound location. Continuing to wait and search.");
-            StartCoroutine(WaitBeforeReturning());
-        }
+        StartCoroutine(WaitBeforeReturning());
     }
 
     IEnumerator WaitBeforeReturning()
     {
         isWaiting = true;
         yield return new WaitForSeconds(10f);
-        navMeshAgent.isStopped = false; // Re-enable movement
+        navMeshAgent.isStopped = false;
         isWaiting = false;
         isReturning = true;
     }
@@ -217,6 +204,7 @@ public class VillainAI : MonoBehaviour
             navMeshAgent.isStopped = true;
             isChasing = false;
             isAttacking = true;
+            lastAttackTime = Time.time - attackCooldown; // Allow immediate first attack
         }
         else if (distanceToPlayer > detectionRadius * 1.5f)
         {
@@ -229,28 +217,63 @@ public class VillainAI : MonoBehaviour
 
     void AttackPlayer()
     {
-        if (Time.time > lastAttackTime + attackCooldown)
-        {
-            
+        // First check if we're actually in range before attempting to attack
+        float distanceToPlayer = Vector3.Distance(transform.position, player.position);
 
+        if (distanceToPlayer > attackRange)
+        {
+            // If we're out of range, stop attacking and resume chase
+            Debug.Log("Player out of attack range. Resuming chase.");
+            navMeshAgent.isStopped = false;
+            isChasing = true;
+            isAttacking = false;
+            animator.SetBool("isAttacking", false);
+            return;
+        }
+
+        // Only start a new attack if we're not already in an attack animation and cooldown is ready
+        if (!animator.GetBool("isAttacking") && Time.time > lastAttackTime + attackCooldown)
+        {
+            StartCoroutine(PerformAttack());
+            lastAttackTime = Time.time;
+        }
+    }
+
+    IEnumerator PerformAttack()
+    {
+        // Start attack animation
+        animator.SetBool("isAttacking", true);
+
+        // Wait for the damage point in the animation
+        yield return new WaitForSeconds(damageDelay);
+
+        // Apply damage if player is still in range
+        if (player != null && Vector3.Distance(transform.position, player.position) <= attackRange)
+        {
             PlayerController playerController = player.GetComponent<PlayerController>();
             if (playerController != null)
             {
                 Debug.Log("Attacking player!");
                 playerController.TakeDamage(100f);
-            }
 
-            lastAttackTime = Time.time;
-            StartCoroutine(Respawn(2));
-
-            float distanceToPlayer = Vector3.Distance(transform.position, player.position);
-            if (distanceToPlayer > attackRange)
-            {
-                Debug.Log("Player out of attack range. Resuming chase.");
-                navMeshAgent.isStopped = false;
-                isChasing = true;
-                isAttacking = false;
+                // Only start respawn if we successfully hit the player
+                StartCoroutine(Respawn(respawnTime));
             }
+        }
+
+        // Wait for the rest of the animation to complete
+        yield return new WaitForSeconds(attackAnimationDuration - damageDelay);
+
+        // Reset attack state
+        animator.SetBool("isAttacking", false);
+
+        // Check if we should continue attacking or return to chase
+        float finalDistance = Vector3.Distance(transform.position, player.position);
+        if (finalDistance > attackRange)
+        {
+            isChasing = true;
+            isAttacking = false;
+            navMeshAgent.isStopped = false;
         }
     }
 
@@ -258,15 +281,16 @@ public class VillainAI : MonoBehaviour
     {
         bool isMoving = navMeshAgent.velocity.magnitude > 0.1f;
         animator.SetBool("isWalking", isMoving);
-        animator.SetBool("isAttacking", isAttacking);
-        animator.SetBool("isDead", isDead);
 
         if (!isMoving && !isAttacking && !isDead)
         {
             animator.SetBool("isIdle", true);
         }
+        else
+        {
+            animator.SetBool("isIdle", false);
+        }
     }
-
 
     void PlayFootstepSounds()
     {
@@ -276,19 +300,21 @@ public class VillainAI : MonoBehaviour
             {
                 AudioClip footstepSound = footstepSounds[Random.Range(0, footstepSounds.Length)];
                 audioSource.PlayOneShot(footstepSound);
-                nextFootstepTime = Time.time + footstepInterval;
+                nextFootstepTime = Time.time + footstepInterval; 
             }
         }
     }
+
     public void characterHitDamage(float takeDamage)
     {
         if (isDead) return;
         presentHealth -= takeDamage;
-        if(presentHealth <= 0)
+        if (presentHealth <= 0)
         {
             characterDie();
         }
     }
+
     void characterDie()
     {
         isDead = true;
@@ -299,14 +325,13 @@ public class VillainAI : MonoBehaviour
         GetComponent<Collider>().enabled = false;
         navMeshAgent.enabled = false;
 
-        //UI
-
-        //Respawn
         StartCoroutine(Respawn(respawnTime));
     }
+
     IEnumerator Respawn(float delay)
     {
-        yield return new WaitForSeconds(delay - 3f);
+        yield return new WaitForSeconds(delay);
+
         presentHealth = characterHealth;
         isDead = false;
         animator.SetBool("isDead", false);
@@ -325,24 +350,18 @@ public class VillainAI : MonoBehaviour
         moveSpeed = 3.5f;
         navMeshAgent.speed = moveSpeed;
         detectionRadius = 15f;
-
     }
+
     void OnDrawGizmos()
     {
         if (navMeshAgent == null || !navMeshAgent.isActiveAndEnabled || !navMeshAgent.hasPath)
             return;
 
-        // Set the color for the Gizmos
         Gizmos.color = Color.red;
-
-        // Get the corners of the path
         Vector3[] pathCorners = navMeshAgent.path.corners;
-
-        // Draw the path
         for (int i = 0; i < pathCorners.Length - 1; i++)
         {
             Gizmos.DrawLine(pathCorners[i], pathCorners[i + 1]);
         }
     }
-
 }
