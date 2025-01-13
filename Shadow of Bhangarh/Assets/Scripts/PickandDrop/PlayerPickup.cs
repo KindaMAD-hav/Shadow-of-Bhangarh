@@ -206,4 +206,23 @@ public class PlayerPickup : MonoBehaviour
             audioSource.PlayOneShot(clip);
         }
     }
+
+    public void ForceDropItem()
+    {
+        if (heldItem != null)
+        {
+            // Destroy the held item
+            Destroy(heldItem);
+
+            // Clear the reference and reset item-related flags
+            heldItem = null;
+            IsRifle = false;
+            HasKey = false;
+            IsPickAxe = false;
+
+            // Don't play drop sound for forced drops
+            // Don't alert the villain for forced drops
+        }
+    }
+
 }

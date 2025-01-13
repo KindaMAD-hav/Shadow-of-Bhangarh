@@ -65,16 +65,28 @@ public class DoorController : MonoBehaviour
 
         if (!string.IsNullOrEmpty(keyLayerName))
         {
-            bool playerHasKey = CheckForKey();
-            if (!playerHasKey)
+            // Get reference to PlayerPickup
+            PlayerPickup playerPickup = player.GetComponent<PlayerPickup>();
+            if (playerPickup != null && playerPickup.HasKey)
+            {
+                // Drop and destroy the key
+                playerPickup.ForceDropItem();
+
+                // Open the door
+                doorAnimator.SetTrigger("Open");
+                Debug.Log("Door is opening.");
+            }
+            else
             {
                 Debug.Log("Player does not have the required key.");
-                return;
             }
         }
-
-        doorAnimator.SetTrigger("Open");
-        Debug.Log("Door is opening.");
+        else
+        {
+            // If no key is required, just open the door
+            doorAnimator.SetTrigger("Open");
+            Debug.Log("Door is opening.");
+        }
     }
 
     bool CheckForKey()
