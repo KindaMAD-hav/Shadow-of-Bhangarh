@@ -7,22 +7,48 @@ public class PlayerPickup : MonoBehaviour
     public KeyCode pickupKey = KeyCode.P;
     public KeyCode dropKey = KeyCode.O;
     public Transform itemHoldPosition;
-    public Transform rifleHoldPosition;  // Added specific position for rifles
-    public Transform pickAxeHoldPosition; // Added specific position for pickaxe
+    public Transform rifleHoldPosition;
+    public Transform pickAxeHoldPosition;
     public Transform playerBody;
+
     private GameObject heldItem;
-    bool isKey;
-    public bool isRifle;
-    public bool isPickAxe;
+    private bool isKey;
+    private bool isRifle;
+    private bool isPickAxe;
+
+    // Proper public properties with get/set accessors
+    public GameObject CurrentlyHeldItem
+    {
+        get { return heldItem; }
+        private set { heldItem = value; }
+    }
+
+    public bool HasKey
+    {
+        get { return isKey; }
+        private set { isKey = value; }
+    }
+
+    public bool IsRifle
+    {
+        get { return isRifle; }
+        private set { isRifle = value; }
+    }
+
+    public bool IsPickAxe
+    {
+        get { return isPickAxe; }
+        private set { isPickAxe = value; }
+    }
 
     [Header("Audio")]
     public AudioClip pickupSound;
     public AudioClip dropSound;
-    public AudioClip breakSound; // Added break sound
+    public AudioClip breakSound;
     private AudioSource audioSource;
 
     [Header("Breakable Settings")]
-    public LayerMask breakableLayer; // Layer for breakable objects
+    public LayerMask breakableLayer;
 
     void Start()
     {
@@ -95,19 +121,19 @@ public class PlayerPickup : MonoBehaviour
         }
 
         // Set appropriate flags and positions based on item type
-        isRifle = item.CompareTag("Rifle");
-        isKey = !isRifle && item.CompareTag("PickupItem");
-        isPickAxe = item.CompareTag("PickAxe");
+        IsRifle = item.CompareTag("Rifle");
+        HasKey = !IsRifle && item.CompareTag("PickupItem");
+        IsPickAxe = item.CompareTag("PickAxe");
 
         heldItem.transform.SetParent(playerBody);
 
         // Use different hold positions for rifles, pickaxes, and regular items
-        if (isRifle)
+        if (IsRifle)
         {
             heldItem.transform.position = rifleHoldPosition.position;
             heldItem.transform.rotation = rifleHoldPosition.rotation;
         }
-        else if (isPickAxe)
+        else if (IsPickAxe)
         {
             heldItem.transform.position = pickAxeHoldPosition.position;
             heldItem.transform.rotation = pickAxeHoldPosition.rotation;
@@ -118,7 +144,7 @@ public class PlayerPickup : MonoBehaviour
             heldItem.transform.rotation = itemHoldPosition.rotation;
         }
 
-        Debug.Log($"Picked Up: {item.name} ({(isRifle ? "Rifle" : isPickAxe ? "PickAxe" : "Regular Item")})");
+        Debug.Log($"Picked Up: {item.name} ({(IsRifle ? "Rifle" : IsPickAxe ? "PickAxe" : "Regular Item")})");
         PlaySound(pickupSound);
     }
 
@@ -136,9 +162,9 @@ public class PlayerPickup : MonoBehaviour
 
             heldItem.transform.SetParent(null);
             heldItem = null;
-            isRifle = false;
-            isKey = false;
-            isPickAxe = false;
+            IsRifle = false;
+            HasKey = false;
+            IsPickAxe = false;
             PlaySound(dropSound);
             VillainAI villainAI = FindObjectOfType<VillainAI>();
             if (villainAI != null)
@@ -153,7 +179,7 @@ public class PlayerPickup : MonoBehaviour
     {
         if (heldItem != null)
         {
-            Transform targetPosition = isRifle ? rifleHoldPosition : (isPickAxe ? pickAxeHoldPosition : itemHoldPosition);
+            Transform targetPosition = IsRifle ? rifleHoldPosition : (IsPickAxe ? pickAxeHoldPosition : itemHoldPosition);
             heldItem.transform.position = targetPosition.position;
             heldItem.transform.rotation = targetPosition.rotation;
         }

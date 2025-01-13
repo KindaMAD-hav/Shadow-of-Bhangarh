@@ -844,8 +844,6 @@ MonoBehaviour:
   rifleHoldPosition: {fileID: 209538176}
   pickAxeHoldPosition: {fileID: 761958784}
   playerBody: {fileID: 352616682}
-  isRifle: 0
-  isPickAxe: 0
   pickupSound: {fileID: 8300000, guid: 117ed51e1bbeec14a9dbcaeb86fce982, type: 3}
   dropSound: {fileID: 8300000, guid: 5d591f02df0c2aa48b91c474454958aa, type: 3}
   breakSound: {fileID: 0}
@@ -1760,6 +1758,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   keyLayerName: Key1
+  keyHoldPosition: {fileID: 0}
 --- !u!95 &867157673
 Animator:
   serializedVersion: 7
@@ -1868,7 +1867,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 1.28, z: 6.82}
   m_LocalScale: {x: 1.9, y: 2.91, z: 0.14}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 1280425359}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &868750131
@@ -3016,6 +3016,7 @@ GameObject:
   - component: {fileID: 1188323999}
   - component: {fileID: 1188324002}
   - component: {fileID: 1188324003}
+  - component: {fileID: 1188324004}
   m_Layer: 3
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -3160,6 +3161,21 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1
   cameraRadius: 0.3
+--- !u!114 &1188324004
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1188323998}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6871b44e48852f840b4a051ac21a2620, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  stepAmplitude: 0.03
+  stepFrequency: 5
+  cameraTransform: {fileID: 1188324001}
 --- !u!1 &1253081766 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 0dcbe568c4f374649b02537c32b868fa, type: 3}
@@ -3324,8 +3340,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerCamera: {fileID: 1188324000}
   shootRange: 100
-  maxBullets: 3
-  shootCooldown: 0.5
+  maxBullets: 1165
+  shootCooldown: 0
   givenDamageOf: 100
   shootingSound: {fileID: 8300000, guid: 0d3b55230c20e79449326fbd1ab72b6d, type: 3}
   audioSource: {fileID: 352616686}
@@ -3528,6 +3544,37 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1276775042}
   m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &1280425358
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1280425359}
+  m_Layer: 0
+  m_Name: keyplacement position
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1280425359
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1280425358}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.474, y: 0, z: -1.4}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 867157677}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &1327678965 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: a49a0e90997a8fe48b7b8e4e2d8ba809, type: 3}

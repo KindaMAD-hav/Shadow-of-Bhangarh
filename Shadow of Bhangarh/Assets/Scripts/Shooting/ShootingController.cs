@@ -9,7 +9,6 @@ public class ShootingController : MonoBehaviour
     public float givenDamageOf = 100f;
     public AudioClip shootingSound;
     public AudioSource audioSource;
-
     private int currentBullets;
     private float lastShootTime;
 
@@ -20,33 +19,37 @@ public class ShootingController : MonoBehaviour
 
     void Update()
     {
-        if(Input.GetMouseButtonDown(0) && Time.time > lastShootTime + shootCooldown && PlayerPickup.instance.isRifle)
+        // Changed to use the IsRifle property
+        if (Input.GetMouseButtonDown(0) && Time.time > lastShootTime + shootCooldown && PlayerPickup.instance.IsRifle)
         {
             Shoot();
         }
     }
+
     void Shoot()
     {
-        if(currentBullets > 0)
+        if (currentBullets > 0)
         {
             lastShootTime = Time.time;
             currentBullets--;
 
-            if(shootingSound != null)
+            if (shootingSound != null)
             {
                 audioSource.PlayOneShot(shootingSound);
             }
+
             RaycastHit hit;
-            if(Physics.Raycast(playerCamera.transform.position, playerCamera.transform.forward, out hit, shootRange))
+            if (Physics.Raycast(playerCamera.transform.position, playerCamera.transform.forward, out hit, shootRange))
             {
-                Debug.Log("Hit:" + hit.collider.name);
+                Debug.Log("Hit: " + hit.collider.name);
                 VillainAI villainAI = hit.transform.GetComponent<VillainAI>();
-                if(villainAI != null )
+                if (villainAI != null)
                 {
                     villainAI.characterHitDamage(givenDamageOf);
                 }
             }
-            Debug.Log("Shot fired. Bullet left" + currentBullets);
+
+            Debug.Log("Shot fired. Bullets left: " + currentBullets);
         }
         else
         {

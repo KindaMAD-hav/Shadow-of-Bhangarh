@@ -1,8 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-
-
 
 public class DoorController : MonoBehaviour
 {
@@ -13,11 +9,12 @@ public class DoorController : MonoBehaviour
     private bool isPlayerNear = false;
     public string keyLayerName = "";
 
+    [Header("Key Position")]
+    public Transform keyHoldPosition;
 
     void Start()
     {
         doorAnimator = GetComponent<Animator>();
-
         if (player == null)
         {
             GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
@@ -33,7 +30,6 @@ public class DoorController : MonoBehaviour
         }
     }
 
-
     void Update()
     {
         CheckPlayerProximity();
@@ -48,7 +44,6 @@ public class DoorController : MonoBehaviour
         OpenDoor();
     }
 
-
     void CheckPlayerProximity()
     {
         if (player == null)
@@ -57,15 +52,7 @@ public class DoorController : MonoBehaviour
             return;
         }
         float distanceToPlayer = Vector3.Distance(player.position, transform.position);
-        if (distanceToPlayer <= detectionDistance)
-        {
-            isPlayerNear = true;
-            
-        }
-        else
-        {
-            isPlayerNear = false;
-        }
+        isPlayerNear = distanceToPlayer <= detectionDistance;
     }
 
     void OpenDoor()
@@ -78,19 +65,7 @@ public class DoorController : MonoBehaviour
 
         if (!string.IsNullOrEmpty(keyLayerName))
         {
-            bool playerHasKey = false;
-
-            // Check if the player has the required key by checking their inventory or child objects
-            foreach (Transform item in player)
-            {
-                if (item.gameObject.layer == LayerMask.NameToLayer(keyLayerName))
-                {
-                    playerHasKey = true;
-                    Debug.Log("Player has the required key.");
-                    break;
-                }
-            }
-
+            bool playerHasKey = CheckForKey();
             if (!playerHasKey)
             {
                 Debug.Log("Player does not have the required key.");
@@ -102,4 +77,32 @@ public class DoorController : MonoBehaviour
         Debug.Log("Door is opening.");
     }
 
+    bool CheckForKey()
+    {
+        // Check using the PlayerPickup component
+        PlayerPickup playerPickup = player.GetComponent<PlayerPickup>();
+        if (playerPickup != null && playerPickup.CurrentlyHeldItem != null)
+        {
+            if (playerPickup.HasKey && playerPickup.CurrentlyHeldItem.layer == LayerMask.NameToLayer(keyLayerName))
+            {
+                return true;
+            }
+        }
+
+        // Fallback check for any key items that might be children of the player
+        foreach (Transform item in player)
+        {
+            if (item.gameObject.layer == LayerMask.NameToLayer(keyLayerName))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public Transform GetKeyHoldPosition()
+    {
+        return keyHoldPosition;
+    }
 }
