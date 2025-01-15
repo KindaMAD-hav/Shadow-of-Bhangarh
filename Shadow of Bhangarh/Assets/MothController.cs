@@ -2,44 +2,32 @@ using UnityEngine;
 
 public class MothController : MonoBehaviour
 {
-    private BoxCollider boundCollider;
-    private float speed;
-    private float lifetime;
+    [Tooltip("Maximum flying speed")]
+    public float speed = 2f;
 
-    private float timeAlive = 0f;
+    [Tooltip("How quickly the moth changes direction (higher = more responsive)")]
+    public float steeringResponsiveness = 2f;
 
-    // We’ll track a “target” random point within the bounds
-    private Vector3 randomTarget;
-
-    // How often the moth picks a new random direction
-    [Tooltip("How often (in seconds) the moth changes flight direction")]
+    [Tooltip("Time between picking new random targets")]
     public float directionChangeInterval = 2f;
+
+    private BoxCollider boundCollider;
+    private Vector3 randomTarget;
+    private Vector3 currentVelocity = Vector3.zero;
 
     private float directionTimer = 0f;
 
-    /// <summary>
-    /// Called from the spawner to set up the moth’s parameters.
-    /// </summary>
+    // Called from the spawner to set up the moth
     public void SetUpMoth(BoxCollider bounds, float mothSpeed, float mothLifetime)
     {
         boundCollider = bounds;
         speed = mothSpeed;
-        lifetime = mothLifetime;
-
-        // Pick an initial random target
+        // Optionally use mothLifetime if you want to handle despawning here
         randomTarget = GetRandomPointInBox(boundCollider);
     }
 
     void Update()
     {
-        // Track how long this moth has been alive
-        timeAlive += Time.deltaTime;
-        if (timeAlive >= lifetime)
-        {
-            Destroy(gameObject);  // Despawn
-            return;
-        }
-
         // Update the direction timer
         directionTimer += Time.deltaTime;
         if (directionTimer >= directionChangeInterval)
@@ -48,30 +36,42 @@ public class MothController : MonoBehaviour
             directionTimer = 0f;
         }
 
-        // Move towards the random target
-        Vector3 direction = (randomTarget - transform.position).normalized;
-        transform.position += direction * speed * Time.deltaTime;
+        // 1. Find the desired direction towards the random target
+        Vector3 desiredDirection = (randomTarget - transform.position).normalized;
 
-        // Optionally, rotate to face the direction of movement
-        if (direction != Vector3.zero)
+        // 2. Convert that to a desired velocity
+        Vector3 desiredVelocity = desiredDirection * speed;
+
+        // 3. Gradually steer your currentVelocity towards the desiredVelocity
+        //    The 'steeringResponsiveness' factor controls how quickly the moth
+        //    steers to the new direction.
+        currentVelocity = Vector3.Lerp(
+            currentVelocity,
+            desiredVelocity,
+            Time.deltaTime * steeringResponsiveness
+        );
+
+        // 4. Move the moth according to currentVelocity
+        transform.position += currentVelocity * Time.deltaTime;
+
+        // 5. Optionally rotate to face the movement direction
+        if (currentVelocity != Vector3.zero)
         {
-            transform.rotation = Quaternion.LookRotation(direction);
+            transform.rotation = Quaternion.Slerp(
+                transform.rotation,
+                Quaternion.LookRotation(currentVelocity),
+                Time.deltaTime * steeringResponsiveness
+            );
         }
     }
 
-    /// <summary>
-    /// Returns a random position within the box collider’s bounds.
-    /// </summary>
     Vector3 GetRandomPointInBox(BoxCollider col)
     {
-        // The center is relative to the transform
         Vector3 center = col.center + col.transform.position;
         Vector3 size = col.size;
-
         float x = Random.Range(center.x - size.x / 2f, center.x + size.x / 2f);
         float y = Random.Range(center.y - size.y / 2f, center.y + size.y / 2f);
         float z = Random.Range(center.z - size.z / 2f, center.z + size.z / 2f);
-
         return new Vector3(x, y, z);
     }
 }
