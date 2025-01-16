@@ -41,7 +41,7 @@
     "m_Dropdowns": [],
     "m_CategoryData": [
         {
-            "m_Id": "5e8bdce3cd7f43ed9319088821298a41"
+            "m_Id": "3c2004f069e64419b95f227835805bf4"
         }
     ],
     "m_Nodes": [
@@ -966,7 +966,7 @@
     "m_ObjectId": "27abda9cae85460aa591b0e4df5b2626",
     "m_Datas": [],
     "m_ActiveSubTarget": {
-        "m_Id": "eeba5e8352af4df1af6547696c27a5b3"
+        "m_Id": "a736308927a242359cffc2fbce8ceb0e"
     },
     "m_AllowMaterialOverride": false,
     "m_SurfaceType": 0,
@@ -1399,6 +1399,48 @@
         "e32": 0.0,
         "e33": 1.0
     }
+}
+
+{
+    "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.CategoryData",
+    "m_ObjectId": "3c2004f069e64419b95f227835805bf4",
+    "m_Name": "",
+    "m_ChildObjectList": [
+        {
+            "m_Id": "1313353ca7693785847316b21297be79"
+        },
+        {
+            "m_Id": "92650d222448c88f8e5d0d8a18607cdf"
+        },
+        {
+            "m_Id": "cbcc6bbfd69dbc8583c5f5ab0f4036ac"
+        },
+        {
+            "m_Id": "dc5dd16785cf728f8c07326a46ef754c"
+        },
+        {
+            "m_Id": "c034406dd84fe68a82782cb7517b5aa1"
+        },
+        {
+            "m_Id": "730f42d3ebe30286bee29771b19466cf"
+        },
+        {
+            "m_Id": "99e7a8438d69a685b3b71e4863e14364"
+        },
+        {
+            "m_Id": "509f1fe63f70f682af6d56c9041afa60"
+        },
+        {
+            "m_Id": "00b187b1a1670484a23430d154bbc9f8"
+        },
+        {
+            "m_Id": "48026670b5bd5c8f9da718f3f57cc38f"
+        },
+        {
+            "m_Id": "4c7dd35df0c057818741f2c6a3941907"
+        }
+    ]
 }
 
 {
@@ -1983,48 +2025,6 @@
         "e32": 0.0,
         "e33": 1.0
     }
-}
-
-{
-    "m_SGVersion": 0,
-    "m_Type": "UnityEditor.ShaderGraph.CategoryData",
-    "m_ObjectId": "5e8bdce3cd7f43ed9319088821298a41",
-    "m_Name": "",
-    "m_ChildObjectList": [
-        {
-            "m_Id": "1313353ca7693785847316b21297be79"
-        },
-        {
-            "m_Id": "92650d222448c88f8e5d0d8a18607cdf"
-        },
-        {
-            "m_Id": "cbcc6bbfd69dbc8583c5f5ab0f4036ac"
-        },
-        {
-            "m_Id": "dc5dd16785cf728f8c07326a46ef754c"
-        },
-        {
-            "m_Id": "c034406dd84fe68a82782cb7517b5aa1"
-        },
-        {
-            "m_Id": "730f42d3ebe30286bee29771b19466cf"
-        },
-        {
-            "m_Id": "99e7a8438d69a685b3b71e4863e14364"
-        },
-        {
-            "m_Id": "509f1fe63f70f682af6d56c9041afa60"
-        },
-        {
-            "m_Id": "00b187b1a1670484a23430d154bbc9f8"
-        },
-        {
-            "m_Id": "48026670b5bd5c8f9da718f3f57cc38f"
-        },
-        {
-            "m_Id": "4c7dd35df0c057818741f2c6a3941907"
-        }
-    ]
 }
 
 {
@@ -3221,6 +3221,16 @@
 }
 
 {
+    "m_SGVersion": 2,
+    "m_Type": "UnityEditor.Rendering.Universal.ShaderGraph.UniversalLitSubTarget",
+    "m_ObjectId": "a736308927a242359cffc2fbce8ceb0e",
+    "m_WorkflowMode": 1,
+    "m_NormalDropOffSpace": 0,
+    "m_ClearCoat": false,
+    "m_BlendModePreserveSpecular": false
+}
+
+{
     "m_SGVersion": 0,
     "m_Type": "UnityEditor.ShaderGraph.BlockNode",
     "m_ObjectId": "a7861d1a9ab1403b9ebc9c525b46971a",
@@ -4198,12 +4208,6 @@
         "w": 0.0
     },
     "m_Labels": []
-}
-
-{
-    "m_SGVersion": 2,
-    "m_Type": "UnityEditor.Rendering.Universal.ShaderGraph.UniversalUnlitSubTarget",
-    "m_ObjectId": "eeba5e8352af4df1af6547696c27a5b3"
 }
 
 {
