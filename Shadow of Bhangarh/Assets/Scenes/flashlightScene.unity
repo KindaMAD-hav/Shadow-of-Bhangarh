@@ -146,6 +146,23 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &63137739
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 63137736}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e0f1a321a9d403e46a701dfa8f81ff6d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  speed: 5
+  steeringResponsiveness: 3
+  directionChangeInterval: 1.5
+  swoopFrequency: 2
+  swoopAmplitude: 0.5
 --- !u!1 &71610820
 GameObject:
   m_ObjectHideFlags: 0
@@ -5575,6 +5592,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: -5609321221556402741, guid: 00fa13b5cb2fafa478369e35f97bb03b, type: 3}
       insertIndex: -1
       addedObject: {fileID: 63137738}
+    - targetCorrespondingSourceObject: {fileID: -5609321221556402741, guid: 00fa13b5cb2fafa478369e35f97bb03b, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 63137739}
   m_SourcePrefab: {fileID: 9199261849990390558, guid: 00fa13b5cb2fafa478369e35f97bb03b, type: 3}
 --- !u!1001 &1666806731
 PrefabInstance:
@@ -5588,6 +5608,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: BatSpawner
       objectReference: {fileID: 0}
+    - target: {fileID: 2562713272768231715, guid: 4d20ec436e8b0e4469f16ebc384fd4cc, type: 3}
+      propertyPath: mothPrefab
+      value: 
+      objectReference: {fileID: 63137736}
     - target: {fileID: 9094785738287297526, guid: 4d20ec436e8b0e4469f16ebc384fd4cc, type: 3}
       propertyPath: m_LocalPosition.x
       value: -0.36
@@ -6029,6 +6053,6 @@ SceneRoots:
   - {fileID: 4043760444911484462}
   - {fileID: 258744917}
   - {fileID: 4207619457931120446}
-  - {fileID: 1666806731}
   - {fileID: 858189908}
+  - {fileID: 1666806731}
   - {fileID: 1343234666}
