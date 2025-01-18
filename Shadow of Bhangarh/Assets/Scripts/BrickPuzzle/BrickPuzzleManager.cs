@@ -6,9 +6,13 @@ public class BrickPuzzleManager : MonoBehaviour
     [SerializeField] private Brick[] bricks; // Assign in Inspector
 
     [Header("Solution")]
-    // This array’s length should match the number of bricks (9).
+    // This array's length should match the number of bricks (9).
     // true means that brick is *required* to be pressed for the puzzle to be solved
     [SerializeField] private bool[] solution;
+
+    [Header("Door Settings")]
+    [SerializeField] private Animator doorAnimator; // Assign the door's Animator in the Inspector
+    [SerializeField] private string openTriggerName = "Open"; // Name of the trigger for opening the door
 
     // A flag to prevent re-triggering the solve event multiple times if you want
     private bool puzzleSolved = false;
@@ -20,11 +24,16 @@ public class BrickPuzzleManager : MonoBehaviour
         {
             bricks[i].puzzleManager = this;
         }
+
+        if (doorAnimator == null)
+        {
+            Debug.LogError("Door Animator is not assigned in the Inspector!");
+        }
     }
 
     public void CheckPuzzleState()
     {
-        // Skip checking if it’s already solved (if you don’t want multiple triggers)
+        // Skip checking if itï¿½s already solved (if you donï¿½t want multiple triggers)
         if (puzzleSolved) return;
 
         // Compare the current brick pressed states to the solution
@@ -51,12 +60,20 @@ public class BrickPuzzleManager : MonoBehaviour
 
     private void OnPuzzleSolved()
     {
-        Debug.Log("Puzzle solved! Open the door or trigger next event.");
+        Debug.Log("Puzzle solved! Opening the door.");
 
-        // Here you can:
-        // - Open a door
-        // - Play an animation
-        // - Enable/disable certain objects
+        // Trigger the door's "Open" animation
+        if (doorAnimator != null)
+        {
+            doorAnimator.SetTrigger(openTriggerName);
+        }
+        else
+        {
+            Debug.LogError("No door Animator is assigned!");
+        }
+
+        // Additional actions (if any)
+        // - Enable/disable objects
         // - Trigger other scripts
     }
 }
