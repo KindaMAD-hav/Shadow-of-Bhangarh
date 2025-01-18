@@ -118,6 +118,11 @@ public class PlayerPickup : MonoBehaviour
         if (itemRb != null)
         {
             itemRb.isKinematic = true;
+            // If it's PICTURE1, disable gravity when picked up
+            if (item.name == "PICTURE1")
+            {
+                itemRb.useGravity = false;
+            }
         }
 
         // Set appropriate flags and positions based on item type
@@ -158,6 +163,10 @@ public class PlayerPickup : MonoBehaviour
             if (itemRb != null)
             {
                 itemRb.isKinematic = false;
+                if (heldItem.name == "PICTURE1")
+                {
+                    itemRb.useGravity = true;
+                }
             }
 
             heldItem.transform.SetParent(null);
@@ -224,5 +233,4 @@ public class PlayerPickup : MonoBehaviour
             // Don't alert the villain for forced drops
         }
     }
-
 }
