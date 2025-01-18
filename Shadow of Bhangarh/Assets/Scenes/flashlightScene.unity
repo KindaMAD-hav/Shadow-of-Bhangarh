@@ -9448,7 +9448,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7333303028321842731, guid: 6b7bf4932c709f8449d58f2752a00360, type: 3}
       propertyPath: m_TagString
-      value: PickupItem
+      value: Planks
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

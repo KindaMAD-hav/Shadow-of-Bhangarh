@@ -14,7 +14,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -5609321221556402741, guid: fa9adf15263796a47b569733e0dd3e38, type: 3}
       propertyPath: m_TagString
-      value: PickAxe
+      value: PickupItem
       objectReference: {fileID: 0}
     - target: {fileID: 5146681718063874739, guid: fa9adf15263796a47b569733e0dd3e38, type: 3}
       propertyPath: m_LocalScale.x
@@ -30,15 +30,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5146681718063874739, guid: fa9adf15263796a47b569733e0dd3e38, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -39.801
       objectReference: {fileID: 0}
     - target: {fileID: 5146681718063874739, guid: fa9adf15263796a47b569733e0dd3e38, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.479
+      value: 4.813
       objectReference: {fileID: 0}
     - target: {fileID: 5146681718063874739, guid: fa9adf15263796a47b569733e0dd3e38, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: 27.442
       objectReference: {fileID: 0}
     - target: {fileID: 5146681718063874739, guid: fa9adf15263796a47b569733e0dd3e38, type: 3}
       propertyPath: m_LocalRotation.w
