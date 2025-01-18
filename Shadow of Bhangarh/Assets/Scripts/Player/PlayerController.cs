@@ -1,14 +1,17 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
     [Header("Player Health")]
     public float currentHealth;
-    float maxHealth;
+    float maxHealth = 100f;
     private bool isDead = false;
     public Transform startPosition;
+
+    [Header("UI")]
+    public GameObject respawnScreen; // Reference to the respawn screen GameObject
 
     [Header("Movement and Gravity")]
     public float speed = 5f;
@@ -19,7 +22,7 @@ public class PlayerController : MonoBehaviour
     private bool isGrounded;
 
     [Header("Camera")]
-    public float mouseSenstivity = 2;
+    public float mouseSensitivity = 2;
 
     [Header("Jump & Crouch")]
     public float crouchSpeed = 2.5f;
@@ -30,36 +33,36 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
-        // Initialize the CharacterController
-
         characterController = GetComponent<CharacterController>();
         if (characterController == null)
         {
             Debug.LogError("CharacterController component is missing on this GameObject.");
         }
+
         Cursor.lockState = CursorLockMode.Locked;
         currentHealth = maxHealth;
+
+        // Ensure respawn screen is hidden at the start
+        if (respawnScreen != null)
+        {
+            respawnScreen.SetActive(false);
+        }
     }
 
     void Update()
     {
-        if (characterController == null) return;
+        if (characterController == null || isDead) return;
 
-        // Check if the player is grounded
         isGrounded = characterController.isGrounded;
 
-        // Reset the velocity when grounded
         if (isGrounded && velocity.y < 0)
         {
-            velocity.y = -2f; // A small downward force to keep the character grounded
+            velocity.y = -2f;
         }
 
         HandleCameraMovement();
-
-        // Handle player movement
         HandlePlayerMovement();
 
-        // Apply gravity
         velocity.y += gravity * Time.deltaTime;
         characterController.Move(velocity * Time.deltaTime);
 
@@ -67,6 +70,7 @@ public class PlayerController : MonoBehaviour
         {
             HandleJump();
         }
+
         if (Input.GetKeyDown(KeyCode.C))
         {
             HandleCrouch();
@@ -75,25 +79,20 @@ public class PlayerController : MonoBehaviour
 
     void HandlePlayerMovement()
     {
-        // Get player input for movement
         float moveX = Input.GetAxis("Horizontal");
         float moveZ = Input.GetAxis("Vertical");
 
-        // Calculate movement direction
         Vector3 move = transform.right * moveX + transform.forward * moveZ;
-
-        // Use crouch speed when crouching
         float currentSpeed = isCrouching ? crouchSpeed : speed;
-
-        // Move the character
         characterController.Move(move * currentSpeed * Time.deltaTime);
     }
 
     void HandleCameraMovement()
     {
-        float mouseX = Input.GetAxis("Mouse X") * mouseSenstivity;
-        float mouseY = Input.GetAxis("Mouse Y") * mouseSenstivity;
+        float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;
+        float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity;
         transform.Rotate(Vector3.up * mouseX);
+
         float verticalLookRotation = Camera.main.transform.localEulerAngles.x - mouseY;
         Camera.main.transform.localRotation = Quaternion.Euler(verticalLookRotation, 0, 0);
     }
@@ -116,7 +115,7 @@ public class PlayerController : MonoBehaviour
     public void TakeDamage(float damage)
     {
         currentHealth -= damage;
-        if(currentHealth <= 0 && !isDead)
+        if (currentHealth <= 0 && !isDead)
         {
             Die();
         }
@@ -125,20 +124,20 @@ public class PlayerController : MonoBehaviour
     void Die()
     {
         isDead = true;
-        //decrease the day
-        StartCoroutine(HandleRespawn());
+
+        // Show respawn screen
+        if (respawnScreen != null)
+        {
+            respawnScreen.SetActive(true);
+        }
+
+        // Lock cursor
+        Cursor.lockState = CursorLockMode.None;
     }
 
-    IEnumerator HandleRespawn()
+    public void Retry()
     {
-        yield return new WaitForSeconds(2f);
-        //black screen
-        characterController.enabled = false;
-        transform.position = startPosition.position;
-        characterController.enabled = true;
-        yield return new WaitForSeconds(0f);
-        //deactivate black screen
-        currentHealth = maxHealth;
-        isDead = false;
+        // Restart the scene
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }

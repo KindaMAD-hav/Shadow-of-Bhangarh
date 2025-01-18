@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.AI;
 
 public class DoorController : MonoBehaviour
 {
@@ -8,13 +9,26 @@ public class DoorController : MonoBehaviour
     public LayerMask playerLayer;
     private bool isPlayerNear = false;
     public string keyLayerName = "";
-
     [Header("Key Position")]
     public Transform keyHoldPosition;
+
+    [Header("NavMesh Settings")]
+    public NavMeshObstacle navMeshObstacle;  // Reference to the NavMeshObstacle component
+    public float carveDelay = 0.5f;          // Delay before carving the NavMesh (to sync with animation)
 
     void Start()
     {
         doorAnimator = GetComponent<Animator>();
+
+        // Get or add NavMeshObstacle component
+        if (navMeshObstacle == null)
+        {
+            navMeshObstacle = gameObject.AddComponent<NavMeshObstacle>();
+            navMeshObstacle.carving = true;
+            navMeshObstacle.size = GetComponent<Collider>().bounds.size;  // Match collider size
+            Debug.Log("NavMeshObstacle component added and configured.");
+        }
+
         if (player == null)
         {
             GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
@@ -65,16 +79,11 @@ public class DoorController : MonoBehaviour
 
         if (!string.IsNullOrEmpty(keyLayerName))
         {
-            // Get reference to PlayerPickup
             PlayerPickup playerPickup = player.GetComponent<PlayerPickup>();
             if (playerPickup != null && playerPickup.HasKey)
             {
-                // Drop and destroy the key
                 playerPickup.ForceDropItem();
-
-                // Open the door
-                doorAnimator.SetTrigger("Open");
-                Debug.Log("Door is opening.");
+                StartDoorOpenSequence();
             }
             else
             {
@@ -83,15 +92,41 @@ public class DoorController : MonoBehaviour
         }
         else
         {
-            // If no key is required, just open the door
-            doorAnimator.SetTrigger("Open");
-            Debug.Log("Door is opening.");
+            StartDoorOpenSequence();
+        }
+    }
+
+    void StartDoorOpenSequence()
+    {
+        doorAnimator.SetTrigger("Open");
+        Debug.Log("Door is opening.");
+
+        // Disable the NavMeshObstacle after a delay to match the animation
+        Invoke("DisableNavMeshObstacle", carveDelay);
+    }
+
+    void DisableNavMeshObstacle()
+    {
+        if (navMeshObstacle != null)
+        {
+            navMeshObstacle.enabled = false;
+            Debug.Log("NavMeshObstacle disabled - enemies can now path through the door.");
+        }
+    }
+
+    // Optional: Add method to close door and re-enable NavMeshObstacle
+    public void CloseDoor()
+    {
+        doorAnimator.SetTrigger("Close");
+        if (navMeshObstacle != null)
+        {
+            navMeshObstacle.enabled = true;
+            Debug.Log("Door closed and NavMeshObstacle re-enabled.");
         }
     }
 
     bool CheckForKey()
     {
-        // Check using the PlayerPickup component
         PlayerPickup playerPickup = player.GetComponent<PlayerPickup>();
         if (playerPickup != null && playerPickup.CurrentlyHeldItem != null)
         {
@@ -101,7 +136,6 @@ public class DoorController : MonoBehaviour
             }
         }
 
-        // Fallback check for any key items that might be children of the player
         foreach (Transform item in player)
         {
             if (item.gameObject.layer == LayerMask.NameToLayer(keyLayerName))
@@ -109,7 +143,6 @@ public class DoorController : MonoBehaviour
                 return true;
             }
         }
-
         return false;
     }
 

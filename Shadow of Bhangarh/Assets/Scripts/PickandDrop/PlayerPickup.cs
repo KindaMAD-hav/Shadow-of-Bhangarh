@@ -4,8 +4,8 @@ public class PlayerPickup : MonoBehaviour
 {
     public static PlayerPickup instance;
     public float pickupRadius = 2f;
-    public KeyCode pickupKey = KeyCode.P;
-    public KeyCode dropKey = KeyCode.O;
+    public KeyCode pickupKey = KeyCode.F;
+    public KeyCode dropKey = KeyCode.F;
     public Transform itemHoldPosition;
     public Transform rifleHoldPosition;
     public Transform pickAxeHoldPosition;

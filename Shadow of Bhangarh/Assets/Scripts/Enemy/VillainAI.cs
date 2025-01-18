@@ -13,7 +13,7 @@ public class VillainAI : MonoBehaviour
     public float moveSpeed = 3.5f;
     private Vector3 soundLocation;
     public bool isReturning = false;
-    private bool isChasing = false;
+    public bool isChasing = false;
     private bool isAttacking = false;
     private bool isWaiting = false;
     private bool isDead = false;
