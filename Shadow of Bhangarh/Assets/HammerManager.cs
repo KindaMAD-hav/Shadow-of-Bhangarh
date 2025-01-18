@@ -15,13 +15,6 @@ public class HammerManager : MonoBehaviour
         if (BrokenHammer != null)
             BrokenHammer.SetActive(false);
     }
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Q))
-        {
-            BreakHammer();
-        }
-    }
 
     // This method will disable the original hammer and enable the broken hammer
     public void BreakHammer()
