@@ -914,6 +914,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   keyLayerName: Key1
+  keyHoldPosition: {fileID: 0}
 --- !u!95 &867157673
 Animator:
   serializedVersion: 7
@@ -2276,10 +2277,14 @@ MonoBehaviour:
   dropKey: 111
   itemHoldPosition: {fileID: 1159971506}
   rifleHoldPosition: {fileID: 209538176}
+  pickAxeHoldPosition: {fileID: 0}
   playerBody: {fileID: 352616682}
-  isRifle: 0
   pickupSound: {fileID: 8300000, guid: 117ed51e1bbeec14a9dbcaeb86fce982, type: 3}
   dropSound: {fileID: 8300000, guid: 5d591f02df0c2aa48b91c474454958aa, type: 3}
+  breakSound: {fileID: 0}
+  breakableLayer:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!82 &1616987807
 AudioSource:
   m_ObjectHideFlags: 0
