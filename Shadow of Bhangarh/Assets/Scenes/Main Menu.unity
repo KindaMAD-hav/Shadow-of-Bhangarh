@@ -357,6 +357,7 @@ GameObject:
   - component: {fileID: 326256233}
   - component: {fileID: 326256232}
   - component: {fileID: 326256234}
+  - component: {fileID: 326256235}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -489,20 +490,28 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 326256230}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: be56ccbfe141a904ba0431565e67a8de, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  normalAlpha: 1
-  flickerAlphaMin: 0
-  flickerAlphaMax: 0.5
-  minWaitTime: 1
-  maxWaitTime: 6
-  minFlickerCount: 2
-  maxFlickerCount: 5
-  minFlickerStepDuration: 0.05
-  maxFlickerStepDuration: 0.15
+  fadeDelay: 1.5
+  fadeDuration: 6
+--- !u!114 &326256235
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 326256230}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f14f932a48d5954b9aa73eb18d9bcde, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fadeDuration: 6
+  tmpText: {fileID: 0}
+  timer: 0
 --- !u!1 &380520061
 GameObject:
   m_ObjectHideFlags: 0
@@ -1112,8 +1121,8 @@ GameObject:
   - component: {fileID: 1679778532}
   - component: {fileID: 1679778534}
   - component: {fileID: 1679778533}
-  - component: {fileID: 1679778535}
   - component: {fileID: 1679778536}
+  - component: {fileID: 1679778537}
   m_Layer: 5
   m_Name: Title
   m_TagString: Untagged
@@ -1239,27 +1248,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1679778531}
   m_CullTransparentMesh: 1
---- !u!114 &1679778535
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1679778531}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: be56ccbfe141a904ba0431565e67a8de, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  normalAlpha: 1
-  flickerAlphaMin: 0
-  flickerAlphaMax: 0.5
-  minWaitTime: 1
-  maxWaitTime: 6
-  minFlickerCount: 2
-  maxFlickerCount: 5
-  minFlickerStepDuration: 0.05
-  maxFlickerStepDuration: 0.15
 --- !u!114 &1679778536
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1272,15 +1260,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be56ccbfe141a904ba0431565e67a8de, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  normalAlpha: 1
-  flickerAlphaMin: 0
-  flickerAlphaMax: 0.5
-  minWaitTime: 0.5
-  maxWaitTime: 2
-  minFlickerCount: 2
-  maxFlickerCount: 5
-  minFlickerStepDuration: 0.05
-  maxFlickerStepDuration: 0.15
+  fadeDelay: 1.5
+  fadeDuration: 6
+--- !u!114 &1679778537
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1679778531}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f14f932a48d5954b9aa73eb18d9bcde, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fadeDuration: 6
+  tmpText: {fileID: 0}
+  timer: 0
 --- !u!1 &1727639683
 GameObject:
   m_ObjectHideFlags: 0
@@ -1293,6 +1289,7 @@ GameObject:
   - component: {fileID: 1727639686}
   - component: {fileID: 1727639685}
   - component: {fileID: 1727639687}
+  - component: {fileID: 1727639688}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -1425,20 +1422,28 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1727639683}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: be56ccbfe141a904ba0431565e67a8de, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  normalAlpha: 1
-  flickerAlphaMin: 0
-  flickerAlphaMax: 0.5
-  minWaitTime: 1
-  maxWaitTime: 6
-  minFlickerCount: 2
-  maxFlickerCount: 5
-  minFlickerStepDuration: 0.05
-  maxFlickerStepDuration: 0.15
+  fadeDelay: 1.5
+  fadeDuration: 6
+--- !u!114 &1727639688
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1727639683}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f14f932a48d5954b9aa73eb18d9bcde, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fadeDuration: 6
+  tmpText: {fileID: 0}
+  timer: 0
 --- !u!1 &1776414688
 GameObject:
   m_ObjectHideFlags: 0
