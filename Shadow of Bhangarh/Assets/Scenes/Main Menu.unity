@@ -509,9 +509,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f14f932a48d5954b9aa73eb18d9bcde, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fadeDuration: 6
-  tmpText: {fileID: 0}
-  timer: 0
 --- !u!1 &380520061
 GameObject:
   m_ObjectHideFlags: 0
@@ -880,8 +877,9 @@ GameObject:
   - component: {fileID: 1632873461}
   - component: {fileID: 1632873460}
   - component: {fileID: 1632873459}
+  - component: {fileID: 1632873462}
   m_Layer: 5
-  m_Name: Play
+  m_Name: SceneChanger
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -928,11 +926,11 @@ MonoBehaviour:
     m_SelectOnRight: {fileID: 0}
   m_Transition: 1
   m_Colors:
-    m_NormalColor: {r: 0.8490566, g: 0.76495194, b: 0.76495194, a: 1}
-    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_NormalColor: {r: 1, g: 1, b: 1, a: 0}
+    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 0}
+    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0}
     m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
   m_SpriteState:
@@ -950,7 +948,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1632873460}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1632873462}
+        m_TargetAssemblyTypeName: SceneChanger, Assembly-CSharp
+        m_MethodName: OnClick
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1632873460
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -989,6 +999,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1632873457}
   m_CullTransparentMesh: 1
+--- !u!114 &1632873462
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1632873457}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 542ed8f79f59e34408b674b881ea89a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneName: postprocessing
+  delay: 3
 --- !u!1 &1679167726
 GameObject:
   m_ObjectHideFlags: 0
@@ -1274,9 +1298,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f14f932a48d5954b9aa73eb18d9bcde, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fadeDuration: 6
-  tmpText: {fileID: 0}
-  timer: 0
 --- !u!1 &1727639683
 GameObject:
   m_ObjectHideFlags: 0
@@ -1441,9 +1462,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f14f932a48d5954b9aa73eb18d9bcde, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fadeDuration: 6
-  tmpText: {fileID: 0}
-  timer: 0
 --- !u!1 &1776414688
 GameObject:
   m_ObjectHideFlags: 0
