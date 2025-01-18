@@ -43,6 +43,8 @@ public class VillainAI : MonoBehaviour
     public float footstepInterval = 0.5f; // Adjustable in Inspector
     private float nextFootstepTime = 0f;
 
+    public CameraPanToEnemy cameraPanToEnemy;
+
     void Start()
     {
         Debug.Log("VillainAI initialized.");
@@ -254,6 +256,7 @@ public class VillainAI : MonoBehaviour
             if (playerController != null)
             {
                 Debug.Log("Attacking player!");
+                cameraPanToEnemy.OnPlayerHit();
                 playerController.TakeDamage(100f);
 
                 // Only start respawn if we successfully hit the player

@@ -8,9 +8,11 @@ public class BreakingInteraction : MonoBehaviour
     // Replace this with your real check (e.g., checking an inventory or equipment system)
     private bool IsHoldingWarhammer()
     {
-        // Currently returns true for demonstration purposes.
-        // In your real project, you'd check if the player is actually holding the "warhammer."
-        return true;
+        if (PlayerPickup.instance != null)
+        {
+            return PlayerPickup.instance.IsPickAxe;
+        }
+        return false;
     }
 
     void Update()
