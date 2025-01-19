@@ -16,7 +16,13 @@ public class BrickPuzzleManager : MonoBehaviour
 
     // A flag to prevent re-triggering the solve event multiple times if you want
     private bool puzzleSolved = false;
-
+    public GameObject outroTrigger;
+    public AudioSource doorAudioPlayer;
+    public AudioClip doorOpen;
+    private void Awake()
+    {
+        outroTrigger.SetActive(false);
+    }
     private void Start()
     {
         // Make sure each Brick references this puzzle manager
@@ -61,7 +67,8 @@ public class BrickPuzzleManager : MonoBehaviour
     private void OnPuzzleSolved()
     {
         Debug.Log("Puzzle solved! Opening the door.");
-
+        outroTrigger.SetActive (true);
+        doorAudioPlayer.PlayOneShot(doorOpen);
         // Trigger the door's "Open" animation
         if (doorAnimator != null)
         {

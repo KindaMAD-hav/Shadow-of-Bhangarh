@@ -10,5 +10,5 @@ public class QuitButton : MonoBehaviour
 
         // Quit the application
         Application.Quit();
-    }
+    }
 }

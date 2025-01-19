@@ -50,6 +50,8 @@ public class VillainAI : MonoBehaviour
 
     public CameraPanToEnemy cameraPanToEnemy;
 
+    private float chaseTimer = 0f; // Timer to track how long the villain has been chasing
+
     void Start()
     {
         Debug.Log("VillainAI initialized.");
@@ -129,6 +131,7 @@ public class VillainAI : MonoBehaviour
                     isReturning = false;
                     isWaiting = false;
                     navMeshAgent.isStopped = false;
+                    chaseTimer = 0f; // Reset chase timer when starting to chase
                 }
             }
         }
@@ -211,6 +214,16 @@ public class VillainAI : MonoBehaviour
             isReturning = true;
             navMeshAgent.isStopped = false;
         }
+
+        // Increase chase timer while chasing
+        chaseTimer += Time.deltaTime;
+        if (chaseTimer >= 15f) // If chasing for 15 seconds, return to start
+        {
+            isChasing = false;
+            isReturning = true;
+            navMeshAgent.isStopped = false;
+            Debug.Log("Chasing too long, returning to start.");
+        }
     }
 
     void AttackPlayer()
@@ -271,13 +284,21 @@ public class VillainAI : MonoBehaviour
 
     void UpdateBackgroundMusic()
     {
+        if (isDead)
+        {
+            // Stop the music when the character is dead
+            backgroundAudioSource.Stop();
+            return;
+        }
+
         if (isChasing && backgroundAudioSource.clip != chaseMusic)
         {
             backgroundAudioSource.clip = chaseMusic;
             backgroundAudioSource.Play();
         }
-        else if (!isChasing && backgroundAudioSource.clip != idleMusic)
+        else if (!isChasing && !isAttacking && backgroundAudioSource.clip != idleMusic)
         {
+            // Ensure idle music plays when not chasing or attacking
             backgroundAudioSource.clip = idleMusic;
             backgroundAudioSource.Play();
         }
