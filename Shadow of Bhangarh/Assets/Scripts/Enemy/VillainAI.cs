@@ -40,8 +40,13 @@ public class VillainAI : MonoBehaviour
     public AudioClip[] footstepSounds;
     private AudioSource audioSource;
     [Tooltip("Interval between footstep sounds in seconds")]
-    public float footstepInterval = 0.5f; // Adjustable in Inspector
+    public float footstepInterval = 0.5f;
     private float nextFootstepTime = 0f;
+
+    [Header("Audio Clips")]
+    public AudioClip chaseMusic;
+    public AudioClip idleMusic;
+    private AudioSource backgroundAudioSource;
 
     public CameraPanToEnemy cameraPanToEnemy;
 
@@ -53,6 +58,17 @@ public class VillainAI : MonoBehaviour
         navMeshAgent.speed = moveSpeed;
         animator = GetComponent<Animator>();
         audioSource = GetComponent<AudioSource>();
+
+        // Setup background music AudioSource
+        backgroundAudioSource = gameObject.AddComponent<AudioSource>();
+        backgroundAudioSource.loop = true;
+        backgroundAudioSource.playOnAwake = false;
+
+        if (idleMusic != null)
+        {
+            backgroundAudioSource.clip = idleMusic;
+            backgroundAudioSource.Play();
+        }
 
         if (startPosition == null)
         {
@@ -80,41 +96,26 @@ public class VillainAI : MonoBehaviour
     {
         if (isDead) return;
 
-        // Don't look for player while attacking
-        if (!isAttacking)
-        {
-            LookForPlayer();
-        }
-
-        if (isAttacking)
-        {
-            AttackPlayer();
-        }
-        else if (isChasing)
-        {
-            ChasePlayer();
-        }
-        else if (isWaiting)
-        {
-            LookForPlayer();
-        }
-        else if (isReturning)
-        {
-            ReturnToStart();
-        }
-        else if (soundHeard)
-        {
-            MoveToSoundLocation();
-        }
+        // Enemy behavior logic
+        if (!isAttacking) LookForPlayer();
+        if (isAttacking) AttackPlayer();
+        else if (isChasing) ChasePlayer();
+        else if (isWaiting) LookForPlayer();
+        else if (isReturning) ReturnToStart();
+        else if (soundHeard) MoveToSoundLocation();
 
         UpdateAnimations();
         PlayFootstepSounds();
+
+        // Update background music based on state
+        UpdateBackgroundMusic();
     }
 
     void LookForPlayer()
     {
         if (player == null) return;
         float distanceToPlayer = Vector3.Distance(transform.position, player.position);
+
         if (distanceToPlayer <= detectionRadius)
         {
             RaycastHit hit;
@@ -158,15 +159,13 @@ public class VillainAI : MonoBehaviour
     void CheckForItems()
     {
         Debug.Log("Checking for items at sound location...");
-        bool itemFound = false;
-
         Collider[] hitColliders = Physics.OverlapSphere(transform.position, searchRadius);
+
         foreach (var hitCollider in hitColliders)
         {
             if (hitCollider.CompareTag("PickupItem") || hitCollider.CompareTag("Rifle"))
             {
                 Debug.Log($"Found item: {hitCollider.gameObject.name}");
-                itemFound = true;
                 break;
             }
         }
@@ -196,21 +195,18 @@ public class VillainAI : MonoBehaviour
     void ChasePlayer()
     {
         if (player == null) return;
-
         navMeshAgent.SetDestination(player.position);
 
         float distanceToPlayer = Vector3.Distance(transform.position, player.position);
         if (distanceToPlayer <= attackRange)
         {
-            Debug.Log("Within attack range. Preparing to attack.");
             navMeshAgent.isStopped = true;
             isChasing = false;
             isAttacking = true;
-            lastAttackTime = Time.time - attackCooldown; // Allow immediate first attack
+            lastAttackTime = Time.time - attackCooldown;
         }
         else if (distanceToPlayer > detectionRadius * 1.5f)
         {
-            Debug.Log("Player out of detection range. Returning to start.");
             isChasing = false;
             isReturning = true;
             navMeshAgent.isStopped = false;
@@ -219,21 +215,14 @@ public class VillainAI : MonoBehaviour
 
     void AttackPlayer()
     {
-        // First check if we're actually in range before attempting to attack
-        float distanceToPlayer = Vector3.Distance(transform.position, player.position);
-
-        if (distanceToPlayer > attackRange)
+        if (player == null || Vector3.Distance(transform.position, player.position) > attackRange)
         {
-            // If we're out of range, stop attacking and resume chase
-            Debug.Log("Player out of attack range. Resuming chase.");
-            navMeshAgent.isStopped = false;
             isChasing = true;
             isAttacking = false;
-            animator.SetBool("isAttacking", false);
+            navMeshAgent.isStopped = false;
             return;
         }
 
-        // Only start a new attack if we're not already in an attack animation and cooldown is ready
         if (!animator.GetBool("isAttacking") && Time.time > lastAttackTime + attackCooldown)
         {
             StartCoroutine(PerformAttack());
@@ -243,56 +232,28 @@ public class VillainAI : MonoBehaviour
 
     IEnumerator PerformAttack()
     {
-        // Start attack animation
         animator.SetBool("isAttacking", true);
-
-        // Wait for the damage point in the animation
         yield return new WaitForSeconds(damageDelay);
 
-        // Apply damage if player is still in range
         if (player != null && Vector3.Distance(transform.position, player.position) <= attackRange)
         {
             PlayerController playerController = player.GetComponent<PlayerController>();
             if (playerController != null)
             {
-                Debug.Log("Attacking player!");
                 cameraPanToEnemy.OnPlayerHit();
                 playerController.TakeDamage(100f);
-
-                // Only start respawn if we successfully hit the player
-                StartCoroutine(Respawn(respawnTime));
             }
         }
 
-        // Wait for the rest of the animation to complete
         yield return new WaitForSeconds(attackAnimationDuration - damageDelay);
-
-        // Reset attack state
         animator.SetBool("isAttacking", false);
-
-        // Check if we should continue attacking or return to chase
-        float finalDistance = Vector3.Distance(transform.position, player.position);
-        if (finalDistance > attackRange)
-        {
-            isChasing = true;
-            isAttacking = false;
-            navMeshAgent.isStopped = false;
-        }
     }
 
     void UpdateAnimations()
     {
         bool isMoving = navMeshAgent.velocity.magnitude > 0.1f;
         animator.SetBool("isWalking", isMoving);
-
-        if (!isMoving && !isAttacking && !isDead)
-        {
-            animator.SetBool("isIdle", true);
-        }
-        else
-        {
-            animator.SetBool("isIdle", false);
-        }
+        animator.SetBool("isIdle", !isMoving && !isAttacking && !isDead);
     }
 
     void PlayFootstepSounds()
@@ -303,8 +264,22 @@ public class VillainAI : MonoBehaviour
             {
                 AudioClip footstepSound = footstepSounds[Random.Range(0, footstepSounds.Length)];
                 audioSource.PlayOneShot(footstepSound);
-                nextFootstepTime = Time.time + footstepInterval; 
+                nextFootstepTime = Time.time + footstepInterval;
             }
+        }
+    }
+
+    void UpdateBackgroundMusic()
+    {
+        if (isChasing && backgroundAudioSource.clip != chaseMusic)
+        {
+            backgroundAudioSource.clip = chaseMusic;
+            backgroundAudioSource.Play();
+        }
+        else if (!isChasing && backgroundAudioSource.clip != idleMusic)
+        {
+            backgroundAudioSource.clip = idleMusic;
+            backgroundAudioSource.Play();
         }
     }
 
@@ -312,10 +287,7 @@ public class VillainAI : MonoBehaviour
     {
         if (isDead) return;
         presentHealth -= takeDamage;
-        if (presentHealth <= 0)
-        {
-            characterDie();
-        }
+        if (presentHealth <= 0) characterDie();
     }
 
     void characterDie()
@@ -340,7 +312,6 @@ public class VillainAI : MonoBehaviour
         animator.SetBool("isDead", false);
         GetComponent<Collider>().enabled = true;
         navMeshAgent.enabled = true;
-        this.enabled = true;
 
         transform.position = startPosition.position;
         navMeshAgent.Warp(startPosition.position);
@@ -357,8 +328,7 @@ public class VillainAI : MonoBehaviour
 
     void OnDrawGizmos()
     {
-        if (navMeshAgent == null || !navMeshAgent.isActiveAndEnabled || !navMeshAgent.hasPath)
-            return;
+        if (navMeshAgent == null || !navMeshAgent.isActiveAndEnabled || !navMeshAgent.hasPath) return;
 
         Gizmos.color = Color.red;
         Vector3[] pathCorners = navMeshAgent.path.corners;
