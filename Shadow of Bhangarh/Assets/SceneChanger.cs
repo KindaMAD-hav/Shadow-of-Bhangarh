@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections;
+using static UnityEngine.Rendering.DebugUI;
 
 public class SceneChanger : MonoBehaviour
 {
@@ -8,10 +9,19 @@ public class SceneChanger : MonoBehaviour
     public string sceneName;
     // Delay in seconds
     public float delay;
+    public GameObject controlPanel;
 
     // Public method to trigger the scene change (for Unity Button)
+    private void Awake()
+    {
+       controlPanel.SetActive(false);
+    }
     public void OnClick()
     {
+        if (controlPanel != null)
+        {
+            controlPanel.SetActive(true); // Turn on the panel
+        }
         StartCoroutine(LoadSceneAfterDelay());
     }
 
